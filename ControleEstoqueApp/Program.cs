@@ -10,65 +10,43 @@ namespace ControleEstoqueApp
         {
             // Id de cadastro dos produtos, para melhor controle.
             int idCadastro = 1;
-            int qtdProdutos = 0;
+            int qtdProdutos = 1;
             bool inicio = true;
 
-            Produto[] produtos = new Produto[1];
+            Produto[] produtos = new Produto[qtdProdutos];
             
-            Funcoes.EscreverNaTela(@"
-                Seja Bem Vindo ao 
-                Tô no Estoque
-                Se a gente não souber onde tá, ninguém sabe!
-                ");
+            Funcoes.EscreverNaTela(@"Seja Bem Vindo ao Sistema!
+Tô no Estoque: Se a gente não souber onde tá, ninguém sabe!");
 
             while (inicio)
             {
-                Produto produto = new Produto();
-
                 int opcao = Funcoes.OpcoesMenu();
 
                 switch (opcao)
                 {
                     case 0:
-
                         inicio = false;
                         break;
 
                     case 1:
-
-                        produto = Funcoes.CadastrarProduto(idCadastro);
-
-                        if (qtdProdutos == produtos.Length)
-                        {
-                            Produto[] novosProdutos = new Produto[produtos.Length + 1];
-                            Array.Copy(produtos, novosProdutos, produtos.Length);
-                            produtos = novosProdutos;
-                        }
-
-                        produtos[qtdProdutos] = produto;
-                        qtdProdutos++;
-
-                        idCadastro++;
+                        produtos = Funcoes.CadastrarProduto(produtos, idCadastro);
+                        idCadastro ++;
                         break;
 
                     case 2:
-
                         Funcoes.ExibirProdutos(produtos);
                         break;
 
                     case 3:
-
-                        Funcoes.EscreverNaTela("Digite a posição do produto que deseja excluir.");
-                        int idExcluir = Convert.ToInt32(Console.ReadLine());
-                        qtdProdutos = produtos.Length - 1;
-                        produtos = Funcoes.ExcluirProduto(produtos, idExcluir);
-                        
+                        produtos = Funcoes.ExcluirProduto(produtos);
                         break;
 
                     case 4:
+                        Funcoes.EntradaEstoque(produtos);
                         break;
 
                     case 5:
+                        Funcoes.SaidaEstoque(produtos);
                         break;
 
                     default:

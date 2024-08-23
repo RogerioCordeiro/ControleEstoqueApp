@@ -3,19 +3,25 @@
     public class Funcoes
     {
 
+        // Função para reduzir a escrita de Console.WriteLine.
+        public static void EscreverNaTela(string mensagem)
+        {
+            Console.WriteLine(mensagem);
+        }
+
         // Função que exibir o menu de opções na tela!
         public static int OpcoesMenu()
         {
 
             EscreverNaTela(@"
-            Escolha uma opção: 
-            [ 1 ] Cadastrar Produto
-            [ 2 ] Todos os Produtos
-            [ 3 ] Remover Produto
-            [ 4 ] Entrada de Estoque
-            [ 5 ] Saída de Estoque
-            [ 0 ] Sair
-            ");
+Escolha uma opção:
+[ 1 ] Cadastrar Produto
+[ 2 ] Todos os Produtos
+[ 3 ] Remover Produto
+[ 4 ] Entrada de Estoque
+[ 5 ] Saída de Estoque
+[ 0 ] Sair
+");
 
             EscreverNaTela("Escolha uma opção:");
             
@@ -23,14 +29,8 @@
             return escolha;
         }
 
-        // Função para reduzir a escrita de Console.WriteLine.
-        public static void EscreverNaTela(string mensagem)
-        {
-            Console.WriteLine(mensagem);
-        }
-
         // Função que realiza o cadastro do produto novo
-        public static Produto CadastrarProduto(int id)
+        public static Produto[] CadastrarProduto(Produto[] produtos, int id)
         {
             Produto produto = new Produto();
 
@@ -43,7 +43,7 @@
             produto.precoVenda = Convert.ToDouble(Console.ReadLine());
             
             EscreverNaTela("Digite o preço de compra:");
-            produto.precoVenda = Convert.ToDouble(Console.ReadLine());
+            produto.precoCompra = Convert.ToDouble(Console.ReadLine());
             
             EscreverNaTela("Digite a quantidade de estoque inicial.");
             produto.quantidadeEstoque = Convert.ToDouble(Console.ReadLine());
@@ -54,27 +54,57 @@
             EscreverNaTela("Digite a data de válidade (formato dd/mm/aaaa 01/01/2024)");
             produto.dataValidade = DateTime.Parse(Console.ReadLine());
 
-            EscreverNaTela($"\n{produto.nome} cadastrado com sucesso!\n");
+            // Verificar se o array está vazio para adiconar um novo produto
+            if (produtos.Length == 0 || produtos[produtos.Length - 1] != null)
+            {
+                // Redimensionar o array para acomodar o novo produto e manter os anteriores
+                Produto[] novosProdutos = new Produto[produtos.Length + 1];
+                Array.Copy(produtos, novosProdutos, produtos.Length);
+                produtos = novosProdutos;
+            }
 
-            return produto;
+            // Adicionar o produto ao array já redimencionado corretamente.
+            produtos[produtos.Length - 1] = produto;
+
+            EscreverNaTela($"\n{produto.nome} cadastrado com sucesso!\n");
+            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(3000);
+            return produtos;
         }
 
+        // Exibi todos os produtos na tela, recebendo como parametro um ARRAY de produtos
         public static void ExibirProdutos(Produto[] produtos)
         {
-            EscreverNaTela("Id |Nome               | Preço venda | Quantidade em estoque");
-            for (int i = 0; i < produtos.Length; i++)
+            if (produtos.Length > 0)
             {
-                EscreverNaTela($"{produtos[i].idProduto}. {produtos[i].nome} ({produtos[i].precoVenda}) - {produtos[i].quantidadeEstoque} no estoque.");
+                EscreverNaTela("--------------------------------------------------------------------------------------");
+                EscreverNaTela("Id".PadRight(8) + "| Nome".PadRight(38) + "| Preço venda".PadRight(15) + "| Estoque\n");
+                for (int i = 0; i < produtos.Length; i++)
+                {
+                    EscreverNaTela($"{produtos[i].idProduto}".PadRight(10) + $"{produtos[i].nome}".PadRight(38) + $"R$ {produtos[i].precoVenda}".PadRight(15) + $"{produtos[i].quantidadeEstoque} no estoque.");
+                }
             }
+            else
+            {
+                EscreverNaTela("--------------------------------------------------------------------------------------\n");
+                EscreverNaTela("Não possui nenhum produto cadastrado, digite 1 para iniciar um cadastro.\n");
+                EscreverNaTela("--------------------------------------------------------------------------------------\n");
+            }
+            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(2000);
         }
 
-        public static Produto[] ExcluirProduto(Produto[] produtos, int idProdutoRemovido)
+        // Excluir um produto cadastrado, necessario informar um Array de produtos e o ID do produto que deseja excluir.
+        public static Produto[] ExcluirProduto(Produto[] produtos)
         {
+            Funcoes.EscreverNaTela("Digite o id do produto que deseja excluir.");
+            int idExcluir = Convert.ToInt32(Console.ReadLine());
+
             Produto[] tempProdutos = new Produto[produtos.Length - 1];
             int indice = 0;
             foreach (var item in produtos)
             {
-                if (item.idProduto != idProdutoRemovido)
+                if (item.idProduto != idExcluir)
                 {
                     tempProdutos[indice] = item;
                     indice++;
@@ -84,8 +114,121 @@
                     EscreverNaTela($"{item.nome} excluido com sucesso.");
                 }
             }
-            
+            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(3000);
             return tempProdutos;
-        } 
+        }
+
+        // Função para lançar entrada estoque, necessario informar um id do produto e a quantidade de entrada do estoque que será lançado. 
+        // Valor será somado ao estoque atual do produto
+        public static Produto[] EntradaEstoque(Produto[] produtos)
+        {
+            // Verificar se o array está vazio casso esteja exibi a mensagem de que não possui produtos cadastrados
+            if (produtos.Length == 0 || produtos[produtos.Length - 1] != null)
+            {
+                string nome = "";
+                double estAnt = 0;
+
+                Funcoes.EscreverNaTela("Digite o id do produto que deseja INCLUIR o estoque.");
+                int idProduto = Convert.ToInt32(Console.ReadLine());
+                if (ProdutoExiste(idProduto, produtos))
+                {
+                    foreach (var item in produtos)
+                    {
+                        if (item.idProduto == idProduto)
+                        {
+                            nome = item.nome;
+                            estAnt = item.quantidadeEstoque;
+                        }
+                    } 
+                    Funcoes.EscreverNaTela($"Digite a quantidade do estoque a ser INCLUIDA para {nome}.");
+                    Funcoes.EscreverNaTela($"Atenção será somado ao estoque atual de {estAnt}.");
+                    double qtdEstoque = Convert.ToDouble(Console.ReadLine());
+            
+                    for (int i = 0; i < produtos.Length; i++)
+                    {
+                        if (produtos[i].idProduto == idProduto)
+                        {
+                            EscreverNaTela("Entrada de estoque lançado com sucesso!\n");
+                            produtos[i].quantidadeEstoque += qtdEstoque;
+                    
+                        }
+                    }
+                }
+                else
+                {
+                    EscreverNaTela("\nO ID digitado não foi localizado. Verifique o ID digitado.");
+                }
+                    
+            }
+            else
+            {
+                EscreverNaTela("\nNão existe produtos cadastrados para \nlançar entrada de estoque seleciona a opção 1 para cadastrar um produto.");
+            }
+            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(3000);
+            return produtos;
+        }
+
+        // Função para lançar saida de estoque, necessario informar um id do produto e a quantidade de saida de estoque que será lançado
+        public static Produto[] SaidaEstoque(Produto[] produtos)
+        {
+            // Verificar se o array está vazio casso esteja exibi a mensagem de que não possui produtos cadastrados
+            if (produtos.Length == 0 || produtos[produtos.Length - 1] != null)
+            {
+                string nome = "";
+                double estAnt = 0;
+                Funcoes.EscreverNaTela("Digite o id do produto que deseja EXCLUIR o estoque.");
+                int idProduto = Convert.ToInt32(Console.ReadLine());
+                if (ProdutoExiste(idProduto, produtos))
+                {
+                    foreach (var item in produtos)
+                    {
+                        if (item.idProduto == idProduto)
+                        {
+                            nome = item.nome;
+                            estAnt = item.quantidadeEstoque;
+                        }
+                    }
+                    Funcoes.EscreverNaTela($"Digite a quantidade do estoque a ser EXCLUIDA para {nome}.");
+                    Funcoes.EscreverNaTela($"Atenção será somado ao estoque atual de {estAnt}.");
+                    double qtdEstoque = Convert.ToDouble(Console.ReadLine());
+                    for (int i = 0; i < produtos.Length; i++)
+                    {
+                        if (produtos[i].idProduto == idProduto)
+                        {
+                            produtos[i].quantidadeEstoque -= qtdEstoque;
+                            EscreverNaTela("Saída de estoque lançada com sucesso!");
+                        }
+                    }
+                }
+                else
+                {
+                    EscreverNaTela("\nO ID digitado não foi localizado. Verifique o ID digitado.");
+                }
+            }
+            else
+            {
+                EscreverNaTela("\nNão existe produtos cadastrados para \nlançar saida de estoque seleciona a opção 1 para cadastrar um produto.");
+            }
+            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(3000);
+            return produtos;
+        }
+
+        // Função que verifica se um produto está cadastrado no Array de produtos, necessario um parametro que é o Id do produto e 
+        private static bool ProdutoExiste(int idProduto, Produto[] produtos)
+        {
+            bool existe = false;
+            for (int i = 0; i < produtos.Length; i++)
+            {
+                if (produtos[i].idProduto == idProduto)
+                {
+                    existe = true;
+                    break;
+                }
+            }
+            return existe; 
+        }
     }
 }
