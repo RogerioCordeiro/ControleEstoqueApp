@@ -10,13 +10,14 @@ namespace ControleEstoqueApp
         {
             // Id de cadastro dos produtos, para melhor controle.
             int idCadastro = 1;
-            int qtdProdutos = 1;
+            int qtdProdutos = 0;
             bool inicio = true;
 
             Produto[] produtos = new Produto[qtdProdutos];
             
             Funcoes.EscreverNaTela(@"Seja Bem Vindo ao Sistema!
-Tô no Estoque: Se a gente não souber onde tá, ninguém sabe!");
+Tô no Estoque: Se a gente não souber onde tá, ninguém sabe!
+Sistema ideal para sua Mercearia!");
 
             while (inicio)
             {
