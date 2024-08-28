@@ -21,8 +21,35 @@ Escolha uma opção:
 [ 5 ] Saída de Estoque
 [ 0 ] Sair
 ");
-            EscreverNaTela("Escolha uma opção:");         
-            int escolha = Convert.ToInt32(Console.ReadLine());
+            int escolha;
+
+            do
+            {
+                EscreverNaTela("Escolha uma opção:");
+
+                string entrada = Console.ReadLine();
+
+                if (int.TryParse(entrada, out int passou))
+                {
+                    if (passou < 0)
+                    {
+                        escolha = passou;
+                        EscreverNaTela("Entrada inválida. Insira uma opção do menu.");
+                    }
+                    else
+                    {
+                        escolha = passou;
+                    }
+                    
+                }
+                else
+                {
+                    EscreverNaTela("Entrada inválida. Insira uma opção do menu.");
+                    escolha = -1;
+                }
+
+            } while (escolha < 0);
+            
             return escolha;
         }
 
@@ -90,23 +117,28 @@ Escolha uma opção:
 Digite 0 para abortar!");
 
             int idExcluir = Convert.ToInt32(Console.ReadLine());
+
             if (produtos.Length == 0)
             {
                 EscreverNaTela($"Você não possui produtos cadastrado.");
                 return produtos;
             }
-            Produto[] tempProdutos = new Produto[produtos.Length - 1];
-            int indice = 0;
+
             if (idExcluir == 0)
             {
                 EscreverNaTela($"Operação cancelada.");
                 Thread.Sleep(2000);
                 return produtos;
             }
-            if (ProdutoExiste(idExcluir, produtos) > 0)
+
+            if (ProdutoExiste(idExcluir, produtos) >= 0)
             {
+                Produto[] tempProdutos = new Produto[produtos.Length - 1];
+
                 foreach (var item in produtos)
                 {
+                    int indice = 0;
+
                     if (item.idProduto != idExcluir)
                     {
                         tempProdutos[indice] = item;
@@ -117,15 +149,16 @@ Digite 0 para abortar!");
                         EscreverNaTela($"{item.nome} excluido com sucesso.");
                     }
                 }
+                // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
+                Thread.Sleep(2000);
+                return tempProdutos;
             }
             else
             {
                 EscreverNaTela($"Produto não localizado verifique o ID digitado.");
+                return produtos;
             }
-            
-            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
-            Thread.Sleep(2000);
-            return tempProdutos;
+
         }
 
         // Função para lançar entrada estoque, necessario informar um id do produto e a quantidade de entrada do estoque que será lançado. 
