@@ -2,13 +2,11 @@
 {
     public class Funcoes
     {
-
         // Função para reduzir a escrita de Console.WriteLine.
         public static void EscreverNaTela(string mensagem)
         {
             Console.WriteLine(mensagem);
         }
-
         // Função que exibir o menu de opções na tela!
         public static int OpcoesMenu()
         {
@@ -22,13 +20,10 @@ Escolha uma opção:
 [ 0 ] Sair
 ");
             int escolha;
-
             do
             {
                 EscreverNaTela("Escolha uma opção:");
-
                 string entrada = Console.ReadLine();
-
                 if (int.TryParse(entrada, out int passou))
                 {
                     if (passou < 0)
@@ -40,16 +35,13 @@ Escolha uma opção:
                     {
                         escolha = passou;
                     }
-                    
                 }
                 else
                 {
                     EscreverNaTela("Entrada inválida. Insira uma opção do menu.");
                     escolha = -1;
                 }
-
-            } while (escolha < 0);
-            
+            } while (escolha < 0);   
             return escolha;
         }
 
@@ -70,7 +62,6 @@ Escolha uma opção:
             produto.fornecedor = Console.ReadLine();
             EscreverNaTela("Digite a data de válidade (formato dd/mm/aaaa 01/01/2024)");
             produto.dataValidade = DateTime.Parse(Console.ReadLine());
-
             // Verificar se o array está vazio para adiconar um novo produto
             if (produtos.Length == 0 || produtos[produtos.Length - 1] != null)
             {
@@ -79,12 +70,11 @@ Escolha uma opção:
                 Array.Copy(produtos, novosProdutos, produtos.Length);
                 produtos = novosProdutos;
             }
-
             // Adicionar o produto ao array já redimencionado corretamente.
             produtos[produtos.Length - 1] = produto;
             EscreverNaTela($"\n{produto.nome} cadastrado com sucesso!");
-            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
-            Thread.Sleep(2000);
+            // Pausa de 1 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(1000);
             return produtos;
         }
 
@@ -106,8 +96,8 @@ Escolha uma opção:
                 EscreverNaTela("Não possui nenhum produto cadastrado, digite 1 para iniciar um cadastro.\n");
                 EscreverNaTela("--------------------------------------------------------------------------------------\n");
             }
-            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
-            Thread.Sleep(2000);
+            // Pausa de 1 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(1000);
         }
 
         // Excluir um produto cadastrado, necessario informar um Array de produtos e o ID do produto que deseja excluir.
@@ -115,30 +105,24 @@ Escolha uma opção:
         {
             Funcoes.EscreverNaTela(@"Digite o ID do produto que deseja EXCLUIR. (Atenção operação NÃO pode ser desfeita.)
 Digite 0 para abortar!");
-
             int idExcluir = Convert.ToInt32(Console.ReadLine());
-
             if (produtos.Length == 0)
             {
                 EscreverNaTela($"Você não possui produtos cadastrado.");
                 return produtos;
             }
-
             if (idExcluir == 0)
             {
                 EscreverNaTela($"Operação cancelada.");
                 Thread.Sleep(2000);
                 return produtos;
             }
-
             if (ProdutoExiste(idExcluir, produtos) >= 0)
             {
                 Produto[] tempProdutos = new Produto[produtos.Length - 1];
-
                 foreach (var item in produtos)
                 {
                     int indice = 0;
-
                     if (item.idProduto != idExcluir)
                     {
                         tempProdutos[indice] = item;
@@ -158,7 +142,6 @@ Digite 0 para abortar!");
                 EscreverNaTela($"Produto não localizado verifique o ID digitado.");
                 return produtos;
             }
-
         }
 
         // Função para lançar entrada estoque, necessario informar um id do produto e a quantidade de entrada do estoque que será lançado. 
@@ -213,8 +196,8 @@ Digite 0 para abortar!");
             {
                 EscreverNaTela("\nNão existe produtos cadastrados para \nlançar entrada de estoque seleciona a opção 1 para cadastrar um produto.");
             }
-            // Pausa de 3 segundos no codigo para melhor visualizar as respostas!
-            Thread.Sleep(2000);
+            // Pausa de 1 segundos no codigo para melhor visualizar as respostas!
+            Thread.Sleep(1000);
             return produtos;
         }
 
